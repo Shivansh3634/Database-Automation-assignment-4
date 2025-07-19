@@ -17,10 +17,12 @@ jobs:
         ports:
           - 3306:3306
         options: >-
+          --default-authentication-plugin=mysql_native_password
           --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -44,4 +46,4 @@ jobs:
           flyway -url=jdbc:mysql://localhost:3306/subscribersdb -user=root -password=root migrate
 
       - name: Indicate deployment complete
-        run: echo " Deployment done by Shivansh (8983634)"
+        run: echo "Deployment done by Shivansh (8983634)"
