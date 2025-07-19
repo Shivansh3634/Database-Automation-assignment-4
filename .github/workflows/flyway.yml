@@ -17,10 +17,10 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost"
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -32,8 +32,16 @@ jobs:
           sudo mv flyway-*/flyway /usr/local/bin/
 
       - name: Wait for MySQL to be healthy
-        run: sleep 30
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 --silent && break
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
 
       - name: Run Flyway migrations
         run: |
-          flyway
+          flyway -X -url=jdbc:mysql://localhost:3306/subscribersdb -user=root -password=root -locations=filesystem:./migrations migrate
+
+      - name: Indicate deployment complete
+        run: echo "✅ Deployment done by Shivansh (8983634)"
