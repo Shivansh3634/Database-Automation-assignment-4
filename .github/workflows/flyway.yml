@@ -26,11 +26,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Flyway
-        run: |
-          curl -L https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.20.1/flyway-commandline-9.20.1-linux-x64.tar.gz | tar xz
-          sudo mv flyway-*/flyway /usr/local/bin/
-
       - name: Wait for MySQL to be healthy
         run: |
           for i in {1..30}; do
@@ -39,9 +34,14 @@ jobs:
             sleep 5
           done
 
-      - name: Run Flyway migrations
+      - name: Run Flyway migrations using Docker
         run: |
-          flyway -X -url=jdbc:mysql://localhost:3306/subscribersdb -user=root -password=root -locations=filesystem:./migrations migrate
+          docker run --rm \
+            -v ${{ github.workspace }}/migrations:/flyway/sql \
+            flyway/flyway migrate \
+            -url=jdbc:mysql://host.docker.internal:3306/subscribersdb \
+            -user=root \
+            -password=root
 
       - name: Indicate deployment complete
-        run: echo "✅ Deployment done by Shivansh (8983634)"
+        run: echo " Deployment done by Shivansh (8983634)"
