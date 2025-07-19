@@ -9,11 +9,12 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: subscribersdb
+  mysql:
+    image: mysql:8.0
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: subscribersdb
+
         ports:
           - 3306:3306
         options: >-
